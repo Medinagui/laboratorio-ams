@@ -189,6 +189,11 @@
 
     /* As cores de cada pedaço do código (tema escuro do VS Code). */
     .c-comentario { color: #6b6f86; }  /* comentários: cinza, bem apagado */
+
+    /* Botão "Esconder comentários": deixa os comentários quase invisíveis.
+       Eles NÃO somem de verdade (as linhas continuam lá), porque a camada
+       colorida precisa ter exatamente o mesmo texto do textarea. */
+    body.sem-comentarios .c-comentario { opacity: 0.12; }
     .c-sinal      { color: #808080; }  /* < > </ /> */
     .c-tag        { color: #569cd6; }  /* html, p, h1, ul, li... */
     .c-atributo   { color: #9cdcfe; }  /* class, href, lang... */
@@ -233,6 +238,7 @@
     <div class="botoes">
       <button id="copiar" class="principal" type="button">📋 Copiar código</button>
       <button id="voltar" type="button">↩️ Voltar ao modelo</button>
+      <button id="comentarios" type="button" aria-pressed="false">🙈 Esconder comentários</button>
       <button id="letra" type="button" aria-pressed="false">🔍 Letra grande</button>
     </div>
   </header>
@@ -530,6 +536,7 @@
 
     const CHAVE_CODIGO = 'laboratorio-ams:codigo';
     const CHAVE_LETRA = 'laboratorio-ams:letra-grande';
+    const CHAVE_COMENTARIOS = 'laboratorio-ams:sem-comentarios';
 
     // Devolve a gavetinha, ou null se o navegador não deixar usar.
     function pegarArmazenamento() {
@@ -845,7 +852,23 @@
         salvar(armazenamento, CHAVE_LETRA, ligado ? 'sim' : 'nao');
       });
 
+      // ----- Botão "Esconder comentários" -----
+      // Só muda a aparência (ver o CSS de body.sem-comentarios):
+      // o código continua igual, e o "Copiar" leva os comentários junto.
+      const botaoComentarios = document.getElementById('comentarios');
+      function esconderComentarios(esconder) {
+        document.body.classList.toggle('sem-comentarios', esconder);
+        botaoComentarios.setAttribute('aria-pressed', String(esconder));
+        botaoComentarios.textContent = esconder ? '🙉 Mostrar comentários' : '🙈 Esconder comentários';
+      }
+      botaoComentarios.addEventListener('click', function () {
+        const esconder = !document.body.classList.contains('sem-comentarios');
+        esconderComentarios(esconder);
+        salvar(armazenamento, CHAVE_COMENTARIOS, esconder ? 'sim' : 'nao');
+      });
+
       // ----- Ao abrir a página -----
+      esconderComentarios(lerSalvo(armazenamento, CHAVE_COMENTARIOS) === 'sim');
       caixa.value = codigoInicial(lerSalvo(armazenamento, CHAVE_CODIGO), MODELO);
       atualizarCores();
       ligarLetraGrande(new URLSearchParams(location.search).has('tv') ||
