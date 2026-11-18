@@ -11,8 +11,8 @@
     2. HTML (dentro de <body>): a barra de botões, a caixa de código
        (<textarea>) e a janelinha do resultado (<iframe>).
     3. JavaScript (dentro de <script>, no fim): pega o que o aluno
-       digitou e mostra no <iframe>; guarda no navegador; copia; volta
-       ao modelo.
+       digitou e mostra no <iframe>; pinta o código com cores, como no
+       VS Code; guarda no navegador; copia; volta ao modelo.
 
   O código inicial (o modelo do site) fica escrito DENTRO do <textarea>.
   Ele é uma cópia do site-modelo/index.html, com os sinais < e &
@@ -123,7 +123,7 @@
       color: var(--texto-suave);
     }
 
-    textarea, iframe {
+    .editor, iframe {
       flex: 1;
       width: 100%;
       min-height: 0;
@@ -131,21 +131,74 @@
       border-radius: 12px;
     }
 
-    textarea {
-      padding: 12px;
-      resize: none;
+    /*
+      ----- O editor com cores (igual ao VS Code) -----
+      Truque: são DUAS camadas, uma em cima da outra, do mesmo tamanho.
+        • Embaixo: <pre id="cores">, com o código colorido.
+        • Em cima: o <textarea>, com a letra TRANSPARENTE. A pessoa
+          digita nele (e vê o cursor), mas o que aparece são as cores
+          da camada de baixo.
+      Por isso as duas precisam ter exatamente a mesma letra, o mesmo
+      espaçamento e a mesma quebra de linha; senão as letras "descolam".
+    */
+    .editor {
+      position: relative;      /* as camadas se posicionam dentro dele */
+      overflow: hidden;
       background: #0f0d22;
-      color: var(--texto);
+      color-scheme: dark;      /* barra de rolagem escura, combinando */
+    }
+    .editor:focus-within { border-color: var(--roxo); }
+
+    .editor textarea, .editor pre {
+      position: absolute;
+      inset: 0;                /* ocupa o editor inteiro */
+      margin: 0;
+      border: 0;
+      padding: 12px;
       font-family: var(--mono);
       font-size: var(--letra-codigo);
       line-height: 1.5;
       tab-size: 2;
+      white-space: pre-wrap;   /* quebra linhas compridas... */
+      overflow-wrap: break-word; /* ...mesmo no meio de "=========" */
+      overflow-x: hidden;
+      /* As duas reservam o espaço da barra de rolagem, mesmo a de baixo,
+         que não mostra barra nenhuma: assim as linhas têm a mesma largura. */
+      scrollbar-gutter: stable;
       /* Algumas fontes de código juntam "<!--" ou "=>" num desenho só
          (ligadura). Desligamos para o aluno ver cada sinal que digita. */
       font-variant-ligatures: none;
       font-feature-settings: "liga" 0, "calt" 0;
     }
-    textarea:focus { outline: none; border-color: var(--roxo); }
+
+    .editor pre {
+      color: #d4d4d4;          /* texto comum */
+      pointer-events: none;    /* cliques atravessam para o textarea */
+      overflow-y: hidden;      /* sem barra: quem rola é o textarea, e ela vai junto */
+    }
+
+    .editor textarea {
+      overflow-y: auto;
+      resize: none;
+      background: transparent;
+      color: transparent;      /* a letra some... */
+      caret-color: white;      /* ...mas o cursor continua aparecendo */
+      outline: none;
+    }
+    .editor textarea::selection { background: rgba(90, 169, 255, 0.35); color: transparent; }
+
+    /* As cores de cada pedaço do código (tema escuro do VS Code). */
+    .c-comentario { color: #6b6f86; }  /* comentários: cinza, bem apagado */
+    .c-sinal      { color: #808080; }  /* < > </ /> */
+    .c-tag        { color: #569cd6; }  /* html, p, h1, ul, li... */
+    .c-atributo   { color: #9cdcfe; }  /* class, href, lang... */
+    .c-texto-attr { color: #ce9178; }  /* "emoji", "https://..." */
+    .c-seletor    { color: #d7ba7d; }  /* body, main, .emoji... (CSS) */
+    .c-arroba     { color: #c586c0; }  /* @keyframes, @media */
+    .c-propriedade{ color: #9cdcfe; }  /* color, background... */
+    .c-valor      { color: #ce9178; }  /* red, "Trebuchet MS", #fff8e7... */
+    .c-numero     { color: #b5cea8; }  /* 24px, 1.5, 2s, 50%... */
+    .c-chave      { color: #ffd700; }  /* { } */
 
     iframe { background: white; }
 
@@ -169,7 +222,7 @@
       /* Aqui a página pode crescer e rolar, em vez de caber numa tela só. */
       html, body { height: auto; }
       main { grid-template-columns: 1fr; flex: none; }
-      textarea, iframe { flex: none; height: 60vh; }
+      .editor, iframe { flex: none; height: 60vh; }
     }
   </style>
 </head>
@@ -188,11 +241,19 @@
     <section>
       <label class="rotulo" for="codigo">✏️ Seu código (mude aqui)</label>
       <!--
-        O texto inicial desta caixa é o modelo do site.
+        O editor tem duas camadas (ver o CSS de .editor):
+        <pre id="cores"> embaixo, com o código colorido, e o <textarea>
+        transparente em cima, onde a pessoa digita.
+        aria-hidden="true" esconde a camada colorida dos leitores de tela
+        (ela é só enfeite: o texto de verdade está no textarea).
+
+        O texto inicial do textarea é o modelo do site.
         spellcheck="false" tira o sublinhado vermelho de "erro de português"
         (código não é português!). autocapitalize/autocomplete="off" impedem
         o celular de mudar o que a pessoa digita.
       -->
+      <div class="editor">
+      <pre id="cores" aria-hidden="true"></pre>
       <textarea id="codigo" spellcheck="false" autocapitalize="off" autocomplete="off">
 &lt;!DOCTYPE html>
 &lt;!--
@@ -435,6 +496,7 @@
 &lt;/body>
 &lt;/html>
 </textarea>
+      </div>
     </section>
 
     <section>
@@ -516,13 +578,143 @@
     }
 
     // =================================================================
-    // PARTE 2 — ligar os botões e a caixa de código na página
+    // PARTE 2 — pintar o código com cores (como o VS Code)
     // =================================================================
-    // Este "if" só existe por causa dos testes automáticos: eles rodam a
-    // PARTE 1 no Node.js, onde não existe página (document). No navegador
-    // ele é sempre verdadeiro.
+    // A função colorir() lê o código do começo ao fim, como quem lê um
+    // livro, e vai separando os pedaços: comentário, etiqueta (tag),
+    // atributo, texto... Cada pedaço vira um <span class="c-...">, e o
+    // CSS dá a cor de cada classe.
+    // Regra de ouro: ela NUNCA muda, tira ou acrescenta letras, só
+    // embrulha. Senão a camada colorida descola do que foi digitado.
+
+    // Troca os sinais que o navegador entenderia como etiqueta.
+    function escaparHtml(texto) {
+      return texto.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Embrulha um pedaço de texto num <span> com a classe da cor.
+    function pintar(classe, texto) {
+      if (!texto) return '';
+      if (!classe) return escaparHtml(texto);   // sem cor especial
+      return '<span class="' + classe + '">' + escaparHtml(texto) + '</span>';
+    }
+
+    // Pinta um código HTML inteiro (e o CSS que estiver dentro de <style>).
+    function colorir(codigo) {
+      let saida = '';
+      let i = 0;   // i = onde estamos lendo agora
+      // Uma etiqueta: "<" ou "</", o nome (p, h1, !DOCTYPE...), o resto até ">".
+      const ETIQUETA = /<(\/?)(![A-Za-z]+|[A-Za-z][\w-]*)([^<>]*)(>?)/y;
+
+      while (i < codigo.length) {
+        // 1) Comentário <!-- ... --> (se não fechar, vai até o fim)
+        if (codigo.startsWith('<!--', i)) {
+          let fim = codigo.indexOf('-->', i + 4);
+          fim = fim === -1 ? codigo.length : fim + 3;
+          saida += pintar('c-comentario', codigo.slice(i, fim));
+          i = fim;
+          continue;
+        }
+
+        // 2) Etiqueta, tipo <p class="emoji"> ou </main>
+        ETIQUETA.lastIndex = i;
+        const achou = ETIQUETA.exec(codigo);
+        if (achou) {
+          const [tudo, barra, nome, resto, fecha] = achou;
+          saida += pintar('c-sinal', '<' + barra) + pintar('c-tag', nome) +
+                   colorirAtributos(resto) + pintar('c-sinal', fecha);
+          i += tudo.length;
+
+          // Abriu um <style>? Até o </style>, o código é CSS.
+          if (!barra && nome.toLowerCase() === 'style' && fecha) {
+            let fimCss = codigo.toLowerCase().indexOf('</style', i);
+            if (fimCss === -1) fimCss = codigo.length;
+            saida += colorirCss(codigo.slice(i, fimCss));
+            i = fimCss;
+          }
+          continue;
+        }
+
+        // 3) Texto comum: vai até o próximo "<"
+        let fim = codigo.indexOf('<', i + 1);
+        if (fim === -1) fim = codigo.length;
+        saida += escaparHtml(codigo.slice(i, fim));
+        i = fim;
+      }
+      return saida;
+    }
+
+    // Pinta o miolo de uma etiqueta:  class="emoji"  ou  lang="pt-BR"
+    function colorirAtributos(texto) {
+      // Cada volta pega: um texto entre aspas, OU um nome, OU um sinal/espaço.
+      return texto.replace(/("[^"]*"?|'[^']*'?)|([^\s="'\/]+)|(\s+|[\s\S])/g,
+        function (_, aspas, nome, outro) {
+          if (aspas) return pintar('c-texto-attr', aspas);
+          if (nome) return pintar('c-atributo', nome);
+          return pintar(outro === '=' || outro === '/' ? 'c-sinal' : '', outro);
+        });
+    }
+
+    // Pinta um trecho de CSS:  seletor { propriedade: valor; }
+    function colorirCss(css) {
+      let saida = '';
+      let i = 0;
+      while (i < css.length) {
+        // Comentário /* ... */
+        if (css.startsWith('/*', i)) {
+          let fim = css.indexOf('*/', i + 2);
+          fim = fim === -1 ? css.length : fim + 2;
+          saida += pintar('c-comentario', css.slice(i, fim));
+          i = fim;
+          continue;
+        }
+        // Chaves e ponto e vírgula
+        if ('{};'.includes(css[i])) {
+          saida += pintar(css[i] === ';' ? '' : 'c-chave', css[i]);
+          i++;
+          continue;
+        }
+        // Lê até o próximo { } ; ou comentário e decide o que é.
+        const distancia = css.slice(i).search(/[{};]|\/\*/);
+        const fim = distancia === -1 ? css.length : i + distancia;
+        const trecho = css.slice(i, fim);
+        if (css[fim] === '{') {
+          // vem antes de "{": é um seletor (body, .emoji, @keyframes pular, 50%)
+          saida += trecho.replace(/(@[\w-]+)|([^@]+)/g, function (_, arroba, resto) {
+            return arroba ? pintar('c-arroba', arroba) : pintar('c-seletor', resto);
+          });
+        } else if (trecho.includes(':')) {
+          // propriedade: valor
+          const doisPontos = trecho.indexOf(':');
+          saida += pintar('c-propriedade', trecho.slice(0, doisPontos)) + ':' +
+                   colorirValor(trecho.slice(doisPontos + 1));
+        } else {
+          saida += escaparHtml(trecho);   // só espaços e quebras de linha
+        }
+        i = fim;
+      }
+      return saida;
+    }
+
+    // Pinta um valor de CSS: números (24px, 1.5, 2s) de verde, o resto
+    // de laranja. Cores com # (ex.: #fff8e7) ficam laranja inteiras,
+    // senão os números do meio delas sairiam verdes.
+    function colorirValor(valor) {
+      return valor.replace(/(#[0-9a-fA-F]+)|(-?\d*\.?\d+(?:px|em|rem|s|ms|vh|vw|%|deg|fr)?)|([^\d.#-]+|[\s\S])/g,
+        function (_, cor, numero, resto) {
+          return numero ? pintar('c-numero', numero) : pintar('c-valor', cor || resto);
+        });
+    }
+
+    // =================================================================
+    // PARTE 3 — ligar os botões e a caixa de código na página
+    // =================================================================
+    // Este "if" só existe por causa dos testes automáticos: eles rodam as
+    // PARTES 1 e 2 no Node.js, onde não existe página (document). No
+    // navegador ele é sempre verdadeiro.
     if (typeof document !== 'undefined') {
       const caixa = document.getElementById('codigo');
+      const cores = document.getElementById('cores');
       const janela = document.getElementById('resultado');
       const aviso = document.getElementById('aviso');
       const botaoLetra = document.getElementById('letra');
@@ -537,6 +729,22 @@
         aviso.textContent = texto;
         aviso.className = tipo || '';
       }
+
+      // ----- Pintar o código -----
+      // Redesenha a camada colorida com o que está no textarea.
+      // O "\n" no fim é porque o <pre> ignora uma última linha vazia,
+      // e aí as camadas descolariam quando o código termina com Enter.
+      function atualizarCores() {
+        cores.innerHTML = colorir(caixa.value) + '\n';
+        acompanharRolagem();
+      }
+
+      // Quando o textarea rola, a camada colorida rola junto.
+      function acompanharRolagem() {
+        cores.scrollTop = caixa.scrollTop;
+        cores.scrollLeft = caixa.scrollLeft;
+      }
+      caixa.addEventListener('scroll', acompanharRolagem);
 
       // ----- Mostrar o resultado -----
       // srcdoc = "o código desta janelinha é este texto aqui".
@@ -568,10 +776,12 @@
       });
 
       // ----- Guardar e atualizar enquanto digita -----
-      // Esperamos o aluno parar de digitar por 0,3 segundo antes de
-      // redesenhar (senão a janelinha piscaria a cada tecla).
+      // As cores mudam na hora (senão a letra digitada ficaria invisível).
+      // Já o resultado espera o aluno parar de digitar por 0,3 segundo
+      // antes de redesenhar (senão a janelinha piscaria a cada tecla).
       let espera = null;
       caixa.addEventListener('input', function () {
+        atualizarCores();
         const guardou = salvar(armazenamento, CHAVE_CODIGO, caixa.value);
         avisar(guardou
           ? '✅ Guardado neste navegador'
@@ -615,6 +825,8 @@
         const certeza = confirm('Isso apaga tudo o que você mudou e volta ao código do modelo.\n\nTem certeza?');
         if (!certeza) return;
         caixa.value = MODELO;
+        caixa.scrollTop = 0;
+        atualizarCores();
         apagarSalvo(armazenamento, CHAVE_CODIGO);
         rolagem = 0;
         janela.srcdoc = MODELO;
@@ -635,6 +847,7 @@
 
       // ----- Ao abrir a página -----
       caixa.value = codigoInicial(lerSalvo(armazenamento, CHAVE_CODIGO), MODELO);
+      atualizarCores();
       ligarLetraGrande(new URLSearchParams(location.search).has('tv') ||
                        lerSalvo(armazenamento, CHAVE_LETRA) === 'sim');
       if (!armazenamento) {
