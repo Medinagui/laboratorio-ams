@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!-- Exemplo: "exposição" em que cada obra é desenhada só com CSS (sem nenhuma imagem). -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arte feita com CSS</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f0e6;
+      color: #2b2b2b;
+      font-family: Georgia, serif;
+      padding: 48px 24px;
+    }
+    h1 { text-align: center; font-size: clamp(36px, 6vw, 64px); margin: 0; }
+    .sub { text-align: center; font-style: italic; color: #6b6b6b; margin: 8px 0 48px; font-size: 20px; }
+    .parede {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    figure { margin: 0; text-align: center; }
+    /* a moldura de madeira de cada quadro */
+    .quadro {
+      height: 260px;
+      border: 14px solid #7c4a1e;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25), inset 0 0 0 6px #e8d8b8;
+      position: relative;
+      overflow: hidden;
+    }
+    figcaption { margin-top: 14px; font-size: 18px; }
+    figcaption small { display: block; color: #6b6b6b; font-family: Arial, sans-serif; font-size: 14px; }
+
+    /* 1. Pôr do sol: degradê no céu + círculo + mar */
+    .por-do-sol { background: linear-gradient(#f97316, #fde047 70%); }
+    .por-do-sol::before {
+      content: ""; position: absolute; width: 120px; height: 120px; border-radius: 50%;
+      background: #fff7ed; left: 50%; top: 45%; transform: translateX(-50%);
+    }
+    .por-do-sol::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 40%;
+      background: repeating-linear-gradient(#0ea5e9 0 10px, #0284c7 10px 20px);
+    }
+
+    /* 2. Planeta com anel: círculo com degradê + elipse inclinada */
+    .planeta { background: radial-gradient(circle at 20% 20%, #312e81, #020617); }
+    .planeta::before {
+      content: ""; position: absolute; width: 130px; height: 130px; border-radius: 50%;
+      left: 50%; top: 50%; transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 35% 35%, #fbbf24, #b45309);
+    }
+    .planeta::after {
+      content: ""; position: absolute; width: 230px; height: 50px; border-radius: 50%;
+      border: 8px solid #fde68a; left: 50%; top: 50%;
+      transform: translate(-50%, -50%) rotate(-20deg);
+    }
+
+    /* 3. Arte geométrica: só faixas com degradê "duro" */
+    .geometrica {
+      background:
+        linear-gradient(45deg, #ef4444 25%, transparent 25%),
+        linear-gradient(-45deg, #3b82f6 25%, transparent 25%),
+        linear-gradient(135deg, #facc15 25%, transparent 25%),
+        #111827;
+    }
+
+    /* 4. Listras que se mexem: animação no fundo */
+    .listras {
+      background: repeating-linear-gradient(90deg, #ec4899 0 30px, #8b5cf6 30px 60px, #06b6d4 60px 90px);
+      background-size: 180px 100%;
+      animation: andar 3s linear infinite;
+    }
+    @keyframes andar { to { background-position: 180px 0; } }
+
+    /* 5. Montanhas: triângulos feitos com clip-path */
+    .montanhas { background: linear-gradient(#bae6fd, #e0f2fe); }
+    .montanhas::before, .montanhas::after { content: ""; position: absolute; bottom: 0; }
+    .montanhas::before {
+      left: -10%; width: 70%; height: 75%; background: #475569;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+    .montanhas::after {
+      right: -10%; width: 75%; height: 60%; background: #334155;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    }
+
+    /* 6. Bolhas: vários círculos num só fundo */
+    .bolhas {
+      background:
+        radial-gradient(circle at 20% 30%, #a7f3d0 0 30px, transparent 31px),
+        radial-gradient(circle at 70% 25%, #fbcfe8 0 45px, transparent 46px),
+        radial-gradient(circle at 45% 70%, #bfdbfe 0 55px, transparent 56px),
+        radial-gradient(circle at 85% 75%, #fde68a 0 25px, transparent 26px),
+        #1e293b;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Arte feita com CSS</h1>
+  <p class="sub">Nenhum destes quadros é uma imagem: todos são desenhados com código.</p>
+
+  <div class="parede">
+    <figure><div class="quadro por-do-sol"></div><figcaption>Pôr do sol<small>degradê + círculo</small></figcaption></figure>
+    <figure><div class="quadro planeta"></div><figcaption>Planeta com anel<small>círculo + elipse girada</small></figcaption></figure>
+    <figure><div class="quadro geometrica"></div><figcaption>Geometria<small>degradês "duros"</small></figcaption></figure>
+    <figure><div class="quadro listras"></div><figcaption>Listras que andam<small>animação</small></figcaption></figure>
+    <figure><div class="quadro montanhas"></div><figcaption>Montanhas<small>triângulos com clip-path</small></figcaption></figure>
+    <figure><div class="quadro bolhas"></div><figcaption>Bolhas<small>vários círculos num fundo só</small></figcaption></figure>
+  </div>
+</body>
+</html>

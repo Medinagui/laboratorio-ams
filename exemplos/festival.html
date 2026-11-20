@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- Exemplo: página de um evento inventado, com contagem regressiva em JavaScript. -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Festival de Robôs 2027</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #ffffff;
+      font-family: "Trebuchet MS", Verdana, sans-serif;
+      background: linear-gradient(160deg, #1e1b4b 0%, #4c1d95 50%, #be185d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      box-sizing: border-box;
+    }
+    .robo { font-size: 120px; animation: dancar 1.6s ease-in-out infinite; }
+    @keyframes dancar {
+      0%, 100% { transform: rotate(-8deg); }
+      50% { transform: rotate(8deg) translateY(-10px); }
+    }
+    h1 { font-size: clamp(40px, 8vw, 96px); margin: 10px 0; text-shadow: 0 6px 0 rgba(0, 0, 0, 0.3); }
+    .data { font-size: 24px; opacity: 0.85; margin: 0 0 40px; }
+    .relogio { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .caixa {
+      background: rgba(255, 255, 255, 0.12);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      width: 140px;
+      padding: 18px 0;
+    }
+    .numero { font-size: 64px; font-weight: bold; font-family: Consolas, "Courier New", monospace; }
+    .rotulo { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; }
+    .atracoes { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 48px; }
+    .atracoes span { background: #facc15; color: #1e1b4b; border-radius: 999px; padding: 10px 22px; font-weight: bold; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <div class="robo">🤖</div>
+  <h1>Festival de Robôs</h1>
+  <p class="data">Um festival inventado · 1º de maio de 2027</p>
+
+  <!-- Os números começam com "--" e o JavaScript lá embaixo preenche. -->
+  <div class="relogio">
+    <div class="caixa"><div class="numero" id="dias">--</div><div class="rotulo">dias</div></div>
+    <div class="caixa"><div class="numero" id="horas">--</div><div class="rotulo">horas</div></div>
+    <div class="caixa"><div class="numero" id="minutos">--</div><div class="rotulo">minutos</div></div>
+    <div class="caixa"><div class="numero" id="segundos">--</div><div class="rotulo">segundos</div></div>
+  </div>
+
+  <div class="atracoes">
+    <span>🏁 Corrida de robôs</span>
+    <span>⚽ Futebol de robôs</span>
+    <span>🎨 Robô que desenha</span>
+    <span>🧩 Oficina de montagem</span>
+  </div>
+
+  <script>
+    // A data do festival (inventada).
+    const festival = new Date(2027, 4, 1, 9, 0, 0); // mês 4 = maio (janeiro é 0)
+
+    function atualizar() {
+      // Quantos milissegundos faltam (no mínimo zero, para não ficar negativo).
+      const falta = Math.max(0, festival - new Date());
+      const segundosTotal = Math.floor(falta / 1000);
+      document.getElementById('dias').textContent = Math.floor(segundosTotal / 86400);
+      document.getElementById('horas').textContent = Math.floor(segundosTotal / 3600) % 24;
+      document.getElementById('minutos').textContent = Math.floor(segundosTotal / 60) % 60;
+      document.getElementById('segundos').textContent = segundosTotal % 60;
+    }
+
+    atualizar();
+    setInterval(atualizar, 1000); // de novo a cada 1 segundo
+  </script>
+</body>
+</html>

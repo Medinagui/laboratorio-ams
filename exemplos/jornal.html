@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!-- Exemplo: jornal inventado, com colunas, manchete e tabela. Só HTML e CSS. -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gazeta do Intervalo</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f4f1ea;
+      color: #1a1a1a;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    .pagina { max-width: 1100px; margin: 0 auto; padding: 32px 24px 56px; }
+    header { text-align: center; border-bottom: 4px double #1a1a1a; padding-bottom: 12px; }
+    header h1 { margin: 0; font-size: clamp(44px, 9vw, 96px); font-family: "Times New Roman", serif; letter-spacing: -1px; }
+    .faixa {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+      font-family: Arial, sans-serif; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+      border-bottom: 1px solid #1a1a1a; padding: 8px 0; margin-bottom: 24px;
+    }
+    .conteudo { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+    @media (max-width: 760px) { .conteudo { grid-template-columns: 1fr; } }
+    .manchete h2 { font-size: clamp(30px, 5vw, 52px); line-height: 1.05; margin: 0 0 12px; }
+    .linha-fina { font-style: italic; font-size: 20px; color: #4a4a4a; margin: 0 0 16px; }
+    .colunas { columns: 2 220px; column-gap: 28px; column-rule: 1px solid #cfc8b8; font-size: 18px; line-height: 1.55; text-align: justify; }
+    .colunas p { margin: 0 0 12px; }
+    .colunas p:first-child::first-letter { float: left; font-size: 64px; line-height: 0.8; padding: 6px 8px 0 0; font-weight: bold; }
+    aside { border-left: 1px solid #1a1a1a; padding-left: 24px; }
+    @media (max-width: 760px) { aside { border-left: none; padding-left: 0; } }
+    aside h3 { font-family: Arial, sans-serif; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; margin: 0 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 16px; }
+    th { text-align: left; border-bottom: 2px solid #1a1a1a; padding: 6px 4px; }
+    td { border-bottom: 1px solid #cfc8b8; padding: 8px 4px; }
+    td.pts, th.pts { text-align: right; font-weight: bold; }
+    tr:first-child td { background: #fde68a; }
+    .nota { margin-top: 28px; padding: 16px; background: #1a1a1a; color: #f4f1ea; font-family: Arial, sans-serif; }
+    .nota b { color: #fde68a; }
+  </style>
+</head>
+<body>
+  <div class="pagina">
+    <header>
+      <h1>Gazeta do Intervalo</h1>
+    </header>
+    <div class="faixa"><span>Edição nº 1</span><span>Um jornal inventado para a aula</span><span>Grátis</span></div>
+
+    <div class="conteudo">
+      <article class="manchete">
+        <h2>Turma descobre que um site é só um arquivo de texto</h2>
+        <p class="linha-fina">E que o navegador é quem transforma esse texto em página</p>
+        <div class="colunas">
+          <p>Numa descoberta que surpreendeu muita gente, a turma percebeu que qualquer site da internet chega ao computador como um simples arquivo de texto, cheio de etiquetas entre os sinais de menor e maior.</p>
+          <p>"Eu achava que era uma imagem", contou um aluno. As etiquetas dizem o que cada pedaço é: um título, um parágrafo, uma lista. É o HTML, o esqueleto da página.</p>
+          <p>Já as cores, as letras e os tamanhos ficam por conta do CSS, a roupa do site. Com o mesmo esqueleto e outra roupa, o site muda de cara por completo.</p>
+          <p>Este jornal, por exemplo, usa colunas como as de um jornal de papel. Tudo feito com uma única linha de CSS: <i>columns</i>.</p>
+        </div>
+      </article>
+
+      <aside>
+        <h3>⚽ Campeonato de botão</h3>
+        <table>
+          <tr><th>Time</th><th class="pts">Pts</th></tr>
+          <tr><td>🟡 Amarelinhos</td><td class="pts">12</td></tr>
+          <tr><td>🔵 Azulões</td><td class="pts">10</td></tr>
+          <tr><td>🟢 Verdinhos</td><td class="pts">7</td></tr>
+          <tr><td>🔴 Vermelhões</td><td class="pts">4</td></tr>
+          <tr><td>🟣 Roxinhos</td><td class="pts">1</td></tr>
+        </table>
+        <div class="nota"><b>Você sabia?</b> Esta tabela é feita com as etiquetas <b>&lt;table&gt;</b>, <b>&lt;tr&gt;</b> (linha) e <b>&lt;td&gt;</b> (célula).</div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- Exemplo: lista de tarefas que fica guardada no navegador. HTML + CSS + JavaScript. -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minhas tarefas</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e0e7ff, #fce7f3);
+      font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 48px 16px;
+      box-sizing: border-box;
+    }
+    .app {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(79, 70, 229, 0.2);
+      padding: 32px;
+    }
+    h1 { margin: 0 0 4px; font-size: 36px; color: #312e81; }
+    .contador { color: #6b7280; margin: 0 0 20px; }
+    form { display: flex; gap: 10px; }
+    input {
+      flex: 1;
+      font-size: 18px;
+      padding: 12px 16px;
+      border: 2px solid #c7d2fe;
+      border-radius: 12px;
+      outline: none;
+    }
+    input:focus { border-color: #4f46e5; }
+    button.adicionar {
+      font-size: 18px; padding: 12px 20px; border: none; border-radius: 12px;
+      background: #4f46e5; color: #ffffff; font-weight: bold; cursor: pointer;
+    }
+    ul { list-style: none; padding: 0; margin: 24px 0 0; }
+    li {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 8px; border-bottom: 1px solid #eef2ff; font-size: 19px;
+    }
+    li input[type="checkbox"] { width: 22px; height: 22px; flex: none; accent-color: #4f46e5; }
+    li span { flex: 1; }
+    li.feita span { text-decoration: line-through; color: #9ca3af; }
+    li button { border: none; background: none; font-size: 20px; cursor: pointer; opacity: 0.4; }
+    li button:hover { opacity: 1; }
+    .vazio { text-align: center; color: #9ca3af; padding: 24px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>✅ Minhas tarefas</h1>
+    <p class="contador" id="contador"></p>
+    <form id="formulario">
+      <input id="nova" placeholder="O que você precisa fazer?" autocomplete="off">
+      <button class="adicionar">Adicionar</button>
+    </form>
+    <ul id="lista"></ul>
+  </div>
+
+  <script>
+    // As tarefas ficam numa lista: [{ texto: 'Estudar CSS', feita: false }, ...]
+    let tarefas = [
+      { texto: 'Publicar o meu site', feita: true },
+      { texto: 'Trocar a cor do título', feita: false },
+      { texto: 'Mostrar o site para alguém', feita: false },
+    ];
+
+    // Tenta recuperar as tarefas guardadas no navegador (se der erro, segue com as de exemplo).
+    try {
+      const guardadas = localStorage.getItem('tarefas-exemplo');
+      if (guardadas) tarefas = JSON.parse(guardadas);
+    } catch (erro) {}
+
+    function guardar() {
+      try { localStorage.setItem('tarefas-exemplo', JSON.stringify(tarefas)); } catch (erro) {}
+    }
+
+    function desenhar() {
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+      tarefas.forEach((tarefa, posicao) => {
+        const item = document.createElement('li');
+        if (tarefa.feita) item.className = 'feita';
+
+        const marcar = document.createElement('input');
+        marcar.type = 'checkbox';
+        marcar.checked = tarefa.feita;
+        marcar.onchange = () => { tarefa.feita = marcar.checked; guardar(); desenhar(); };
+
+        const texto = document.createElement('span');
+        texto.textContent = tarefa.texto;
+
+        const apagar = document.createElement('button');
+        apagar.textContent = '🗑️';
+        apagar.title = 'Apagar';
+        apagar.onclick = () => { tarefas.splice(posicao, 1); guardar(); desenhar(); };
+
+        item.append(marcar, texto, apagar);
+        lista.appendChild(item);
+      });
+
+      const faltam = tarefas.filter((t) => !t.feita).length;
+      document.getElementById('contador').textContent =
+        tarefas.length === 0 ? 'Nada por aqui. Que tal adicionar uma tarefa?' : 'Faltam ' + faltam + ' de ' + tarefas.length;
+    }
+
+    document.getElementById('formulario').onsubmit = (evento) => {
+      evento.preventDefault(); // não deixa a página recarregar
+      const campo = document.getElementById('nova');
+      const texto = campo.value.trim();
+      if (texto) {
+        tarefas.push({ texto: texto, feita: false });
+        guardar();
+        desenhar();
+      }
+      campo.value = '';
+      campo.focus();
+    };
+
+    desenhar();
+  </script>
+</body>
+</html>

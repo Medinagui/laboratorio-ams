@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- Exemplo: jogo da memória com emojis. HTML + CSS + JavaScript. -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jogo da memória</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #064e3b;
+      color: #ecfdf5;
+      font-family: Verdana, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px;
+      box-sizing: border-box;
+    }
+    h1 { margin: 0 0 6px; font-size: clamp(32px, 6vw, 56px); }
+    .placar { font-size: 22px; margin-bottom: 24px; }
+    .mesa {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(64px, 104px));
+      gap: 14px;
+    }
+    .carta {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 16px;
+      font-size: clamp(32px, 7vw, 64px);
+      cursor: pointer;
+      background: #10b981;
+      box-shadow: 0 6px 0 #047857;
+      transition: transform 0.15s;
+    }
+    .carta:hover { transform: translateY(-3px); }
+    .carta.virada { background: #ecfdf5; box-shadow: 0 6px 0 #a7f3d0; }
+    .carta.achada { background: #fde68a; box-shadow: 0 6px 0 #f59e0b; cursor: default; }
+    .fim { margin-top: 28px; font-size: 26px; min-height: 36px; }
+    button.novo {
+      margin-top: 8px;
+      font-size: 20px;
+      padding: 12px 28px;
+      border-radius: 999px;
+      border: none;
+      background: #fde68a;
+      color: #064e3b;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🃏 Jogo da memória</h1>
+  <div class="placar">Jogadas: <b id="jogadas">0</b></div>
+  <div class="mesa" id="mesa"></div>
+  <div class="fim" id="fim"></div>
+  <button class="novo" onclick="comecar()">Jogar de novo</button>
+
+  <script>
+    const figuras = ['🚀', '🎸', '⚽', '🐱', '🍕', '🌈', '🎮', '🦖'];
+    let viradas = [];   // as cartas viradas agora (no máximo 2)
+    let jogadas = 0;
+    let achados = 0;
+
+    function embaralhar(lista) {
+      // Troca cada posição com outra sorteada (embaralhamento "Fisher-Yates").
+      for (let i = lista.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [lista[i], lista[j]] = [lista[j], lista[i]];
+      }
+      return lista;
+    }
+
+    function comecar() {
+      viradas = []; jogadas = 0; achados = 0;
+      document.getElementById('jogadas').textContent = 0;
+      document.getElementById('fim').textContent = '';
+      const mesa = document.getElementById('mesa');
+      mesa.innerHTML = '';
+      // Cada figura aparece duas vezes.
+      for (const figura of embaralhar([...figuras, ...figuras])) {
+        const carta = document.createElement('button');
+        carta.className = 'carta';
+        carta.dataset.figura = figura;
+        carta.textContent = '❔';
+        carta.onclick = () => virar(carta);
+        mesa.appendChild(carta);
+      }
+    }
+
+    function virar(carta) {
+      if (viradas.length === 2 || carta.classList.contains('virada') || carta.classList.contains('achada')) return;
+      carta.classList.add('virada');
+      carta.textContent = carta.dataset.figura;
+      viradas.push(carta);
+      if (viradas.length < 2) return;
+
+      jogadas++;
+      document.getElementById('jogadas').textContent = jogadas;
+      const [a, b] = viradas;
+      if (a.dataset.figura === b.dataset.figura) {
+        // Par certo: ficam viradas para sempre.
+        a.classList.add('achada'); b.classList.add('achada');
+        viradas = [];
+        achados++;
+        if (achados === figuras.length) {
+          document.getElementById('fim').textContent = '🎉 Você achou todos os pares em ' + jogadas + ' jogadas!';
+        }
+      } else {
+        // Par errado: espera um pouco e desvira.
+        setTimeout(() => {
+          for (const c of viradas) { c.classList.remove('virada'); c.textContent = '❔'; }
+          viradas = [];
+        }, 800);
+      }
+    }
+
+    comecar();
+  </script>
+</body>
+</html>

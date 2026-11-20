@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  Vitrine de exemplos: páginas prontas para o instrutor mostrar na TV
+  que dá para montar QUALQUER tipo de página com HTML, CSS (e um pouco
+  de JavaScript). Não é modelo para os alunos. Tudo inventado, sem
+  dados pessoais, sem internet (abre direto do arquivo).
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dá para fazer de tudo</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+      padding: 48px 24px;
+      box-sizing: border-box;
+    }
+    h1 { text-align: center; font-size: clamp(36px, 6vw, 72px); margin: 0 0 8px; }
+    .sub { text-align: center; color: #8b949e; font-size: 22px; margin: 0 0 48px; }
+    .grade {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    a.cartao {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 20px;
+      padding: 28px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    a.cartao:hover { transform: translateY(-6px); border-color: #39d353; }
+    .icone { font-size: 56px; }
+    .cartao h2 { margin: 12px 0 6px; font-size: 28px; }
+    .cartao p { margin: 0; color: #8b949e; font-size: 18px; line-height: 1.4; }
+    .tags { margin-top: 14px; font-family: ui-monospace, Consolas, monospace; font-size: 15px; color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <h1>Dá para fazer de tudo 🌐</h1>
+  <p class="sub">Todas estas páginas são feitas com as mesmas três coisas: HTML, CSS e um pouco de JavaScript.</p>
+
+  <div class="grade">
+    <a class="cartao" href="cardapio.html">
+      <div class="icone">🥟</div>
+      <h2>Cardápio</h2>
+      <p>O cardápio de uma pastelaria, com preços e destaques.</p>
+      <div class="tags">HTML + CSS · grade de cartões</div>
+    </a>
+    <a class="cartao" href="festival.html">
+      <div class="icone">🤖</div>
+      <h2>Festival</h2>
+      <p>A página de um evento, com contagem regressiva ao vivo.</p>
+      <div class="tags">HTML + CSS + JavaScript · relógio</div>
+    </a>
+    <a class="cartao" href="memoria.html">
+      <div class="icone">🃏</div>
+      <h2>Jogo da memória</h2>
+      <p>Um jogo de verdade, que roda no navegador.</p>
+      <div class="tags">HTML + CSS + JavaScript · jogo</div>
+    </a>
+    <a class="cartao" href="galeria.html">
+      <div class="icone">🎨</div>
+      <h2>Arte com CSS</h2>
+      <p>Uma exposição em que todos os desenhos são feitos só com CSS.</p>
+      <div class="tags">HTML + CSS · degradês e formas</div>
+    </a>
+    <a class="cartao" href="jornal.html">
+      <div class="icone">📰</div>
+      <h2>Jornal</h2>
+      <p>Um jornal com colunas, manchete e tabela do campeonato.</p>
+      <div class="tags">HTML + CSS · colunas e tabela</div>
+    </a>
+    <a class="cartao" href="tarefas.html">
+      <div class="icone">✅</div>
+      <h2>Lista de tarefas</h2>
+      <p>Um aplicativo que guarda as tarefas no navegador.</p>
+      <div class="tags">HTML + CSS + JavaScript · aplicativo</div>
+    </a>
+  </div>
+</body>
+</html>
